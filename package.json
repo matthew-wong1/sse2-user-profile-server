@@ -17,5 +17,10 @@
   "proxy": "http://127.0.0.1:3001",
   "devDependencies": {
     "jest": "^29.7.0"
-  }
+  },
+  "jest": {
+    "testMatch": [
+      "**/__tests__/*.js"
+    ]
+}
 }
