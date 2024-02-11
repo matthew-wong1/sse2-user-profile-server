@@ -39,6 +39,10 @@ app.get("/api/user", (req, res) => {
 app.post('/api/signup', (req, res) => {
   // Form validation 
 
+  // Update database 
+
+  // Re-route to signin? 
+
 });
 
 app.listen(PORT, IP_ADDRESS, () => {
