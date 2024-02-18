@@ -22,6 +22,7 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 const { body, validationResult } = require("express-validator");
+const { PoolCluster } = require("mysql2/typings/mysql/lib/PoolCluster");
 
 // FOR DEVELOPMENT PURPOSES
 app.use(cors());
@@ -236,6 +237,24 @@ function validateYears() {
 	];
 }
 
+const getOrAddUniversity = async (universityName) => {
+	let [university] = await pool.query(
+		"SELECT universityid FROM universities WHERE university = ?",
+		[universityName]
+	);
+
+	if (university.length === 0) {
+		const result = await pool.query(
+			"INSERT INTO universities (university) VALUES (?)",
+			[universityName]
+		);
+
+		return result[0].universityid;
+	}
+
+	return university[0].universityid;
+};
+
 app.post("/api/signup", async (req, res) => {
 	// Step 1: Run all field validations for not being empty and trim them
 	await Promise.all(
@@ -271,6 +290,7 @@ app.post("/api/signup", async (req, res) => {
 	}
 
 	// If there are no errors, proceed with your route logic
+	console.log(req.body);
 	console.log(req.universityName);
 	// If university name not in univeristies table
 	// Add to universities table
