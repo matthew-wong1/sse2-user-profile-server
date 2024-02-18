@@ -267,6 +267,7 @@ const addUser = async (userDetails, universityID) => {
 		international,
 		startYear,
 		endYear,
+		interests,
 	} = userDetails;
 
 	const result = await pool.query(
@@ -285,9 +286,23 @@ const addUser = async (userDetails, universityID) => {
 			password,
 		]
 	);
-
-	return result[0].userid;
+	if (interests && interests.length > 0) {
+		await addUserInterests(result[0].userid, interests);
+	}
 };
+
+async function addUserInterests(userID, interestIDs) {
+	const insertQuery =
+		"INSERT INTO user_interests (user_id, interest_id) VALUES ?";
+
+	const values = interestIDs.map((interestID) => [userID, interestID]);
+
+	try {
+		await pool.query(insertQuery, [values]);
+	} catch (error) {
+		throw error;
+	}
+}
 
 app.post("/api/signup", async (req, res) => {
 	// Step 1: Run all field validations for not being empty and trim them
@@ -332,8 +347,14 @@ app.post("/api/signup", async (req, res) => {
 	// If it is, get back university Id
 
 	// Store rest in users table
-
-	res.status(201).json({ message: "Signup successful!" });
+	try {
+		const universityID = await getOrAddUniversity(req.universityName);
+		await addUser(req.body, universityID);
+		res.status(201).json({ message: "Signup successful!" });
+	} catch (error) {
+		console.error("Signup error:", error);
+		res.status(500).json({ error: "Internal server error" });
+	}
 });
 
 app.listen(PORT, IP_ADDRESS, () => {
