@@ -22,7 +22,6 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 const { body, validationResult } = require("express-validator");
-const { PoolCluster } = require("mysql2/typings/mysql/lib/PoolCluster");
 
 // FOR DEVELOPMENT PURPOSES
 app.use(cors());
@@ -249,7 +248,7 @@ const getOrAddUniversity = async (universityName) => {
 			[universityName]
 		);
 
-		return result[0].universityid;
+		return result[0].insertId;
 	}
 
 	return university[0].universityid;
@@ -270,15 +269,18 @@ const addUser = async (userDetails, universityID) => {
 		interests,
 	} = userDetails;
 
+	// Convert to boolean for SQL
+	const internationalInt = international ? 1 : 0;
+
 	const result = await pool.query(
-		"INSERT INTO users (username, firstname, lastname, email, universityid, international, degreeid, degreelevelid, startyear, endyear, passwordhash VALUES (?, ? ,? ,? ,? ,? ,? ,? ,? ,? ,?",
+		"INSERT INTO users (userid, firstname, lastname, email, universityid, international, degreeid, degreelevelid, startyear, endyear, passwordhash) VALUES (?, ? ,? ,? ,? ,? ,? ,? ,? ,? ,?)",
 		[
 			username,
 			firstName,
 			lastName,
 			email,
 			universityID,
-			international,
+			internationalInt,
 			degree,
 			degreeLevel,
 			startYear,
@@ -287,13 +289,12 @@ const addUser = async (userDetails, universityID) => {
 		]
 	);
 	if (interests && interests.length > 0) {
-		await addUserInterests(result[0].userid, interests);
+		await addUserInterests(username, interests);
 	}
 };
 
 async function addUserInterests(userID, interestIDs) {
-	const insertQuery =
-		"INSERT INTO user_interests (user_id, interest_id) VALUES ?";
+	const insertQuery = "INSERT INTO userinterest (userid, interestid) VALUES ?";
 
 	const values = interestIDs.map((interestID) => [userID, interestID]);
 
