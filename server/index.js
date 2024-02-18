@@ -255,6 +255,40 @@ const getOrAddUniversity = async (universityName) => {
 	return university[0].universityid;
 };
 
+const addUser = async (userDetails, universityID) => {
+	const {
+		username,
+		firstName,
+		lastName,
+		email,
+		password,
+		degree,
+		degreeLevel,
+		international,
+		startYear,
+		endYear,
+	} = userDetails;
+
+	const result = await pool.query(
+		"INSERT INTO users (username, firstname, lastname, email, universityid, international, degreeid, degreelevelid, startyear, endyear, passwordhash VALUES (?, ? ,? ,? ,? ,? ,? ,? ,? ,? ,?",
+		[
+			username,
+			firstName,
+			lastName,
+			email,
+			universityID,
+			international,
+			degree,
+			degreeLevel,
+			startYear,
+			endYear,
+			password,
+		]
+	);
+
+	return result[0].userid;
+};
+
 app.post("/api/signup", async (req, res) => {
 	// Step 1: Run all field validations for not being empty and trim them
 	await Promise.all(
