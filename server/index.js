@@ -75,6 +75,25 @@ app.get("/api/degreelevels", async (req, res) => {
 	}
 });
 
+const getInterests = async () => {
+	try {
+		const [results] = await pool.query("SELECT * FROM interest");
+		return results;
+	} catch (error) {
+		throw error;
+	}
+};
+
+app.get("/api/interests", async (req, res) => {
+	try {
+		const interests = await getInterests();
+		res.json({ interests });
+	} catch (error) {
+		console.error("Error fetching interests:", error);
+		res.status(500).json({ error: "Internal server error" });
+	}
+});
+
 // Get user profile information
 app.get("/api/user", (req, res) => {
 	// Authenticate JWT (another microservice?)
@@ -252,7 +271,14 @@ app.post("/api/signup", async (req, res) => {
 	}
 
 	// If there are no errors, proceed with your route logic
-	console.log(req.body);
+	console.log(req.universityName);
+	// If university name not in univeristies table
+	// Add to universities table
+	// Get back university ID
+	// If it is, get back university Id
+
+	// Store rest in users table
+
 	res.status(201).json({ message: "Signup successful!" });
 });
 
