@@ -37,6 +37,44 @@ app.get("/api", (req, res) => {
 	res.json({ message: "Hello from server!" });
 });
 
+const getDegrees = async () => {
+	try {
+		const [results] = await pool.query("SELECT * FROM degrees");
+		return results;
+	} catch (error) {
+		throw error;
+	}
+};
+
+app.get("/api/degrees", async (req, res) => {
+	try {
+		const degrees = await getDegrees();
+		res.json({ degrees });
+	} catch (error) {
+		console.error("Error fetching degrees:", error);
+		res.status(500).json({ error: "Internal server error" });
+	}
+});
+
+const getDegreeLevels = async () => {
+	try {
+		const [results] = await pool.query("SELECT * FROM degreelevel");
+		return results;
+	} catch (error) {
+		throw error;
+	}
+};
+
+app.get("/api/degreelevels", async (req, res) => {
+	try {
+		const degreeLevels = await getDegreeLevels();
+		res.json({ degreeLevels });
+	} catch (error) {
+		console.error("Error fetching degree levels:", error);
+		res.status(500).json({ error: "Internal server error" });
+	}
+});
+
 // Get user profile information
 app.get("/api/user", (req, res) => {
 	// Authenticate JWT (another microservice?)
@@ -66,29 +104,6 @@ async function isValidUniversityEmail(email) {
 		return false;
 	}
 }
-
-// Middleware to dynamically validate all fields for not being empty and trim them
-const validateAllFieldsNotEmpty = (req, res, next) => {
-	// Extract fields from request body
-	const fields = Object.keys(req.body);
-
-	// Generate validation chain for each field
-	const validations = fields.map((field) =>
-		body(field).trim().notEmpty().withMessage(`${field} cannot be empty`)
-	);
-
-	// Execute the validations
-	Promise.all(validations.map((validation) => validation.run(req))).then(() => {
-		// Check for validation errors after all validations have been executed
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			// If there are errors, return them
-			return res.status(400).json({ errors: errors.array() });
-		}
-		// If no errors, proceed to the next middleware
-		next();
-	});
-};
 
 const validateUsername = [
 	body("username").custom(async (username) => {
