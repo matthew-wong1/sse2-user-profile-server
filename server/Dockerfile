@@ -5,7 +5,7 @@ FROM node:19.6.0-alpine
 WORKDIR /my-app
 
 # Copy package.json and package-lock.json to the container
-COPY package*.json ./
+COPY ../package*.json ./
 
 # Install dependencies
 RUN npm install
