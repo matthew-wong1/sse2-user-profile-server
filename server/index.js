@@ -6,11 +6,11 @@ const axios = require("axios");
 require("dotenv").config();
 
 const pool = mysql.createPool({
-	host: process.env.DB_HOST,
+	host: "socialconnect15.mysql.database.azure.com",
 	user: process.env.DB_USER,
 	password: process.env.DB_PASSWORD,
-	database: process.env.DB_DATABASE,
-	port: process.env.DB_PORT,
+	database: "connectsocial",
+	port: 3306,
 	waitForConnections: true,
 	connectionLimit: 10,
 	queueLimit: 0,
