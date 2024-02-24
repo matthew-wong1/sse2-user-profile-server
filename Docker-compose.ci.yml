@@ -2,7 +2,7 @@ version: "3.2"
 services:
   website:
     build:
-      context: ./server
+      context: ./
       dockerfile: Dockerfile
     #cache_from:
     #    - '${website_IMAGE}'
