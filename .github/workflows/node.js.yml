@@ -5,22 +5,77 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
+
+env:
+  #
+  WEBSITE_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/website
+  NGINX_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx
+  REGISTRY: ghcr.io
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js '20.x'
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+      - uses: actions/checkout@v3
+      - name: Use Node.js '20.x'
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.x"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
+
+  build-docker-image:
+    name: Build the Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout main
+        uses: actions/checkout@v3
+
+      - name: Set WEBSITE_IMAGE and NGINX_IMAGE
+        run: |
+          echo "WEBSITE_IMAGE=ghcr.io/${{ github.repository_owner }}/$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')/website" >> $GITHUB_ENV
+          echo "NGINX_IMAGE=ghcr.io/${{ github.repository_owner }}/$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')/nginx" >> $GITHUB_ENV
+
+      - name: Convert image names to lowercase
+        run: |
+          echo "WEBSITE_IMAGE=$(echo $WEBSITE_IMAGE | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+          echo "NGINX_IMAGE=$(echo $NGINX_IMAGE | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Set environment variables to .env
+        run: |
+          echo "WEBSITE_IMAGE=$(echo ${{env.WEBSITE_IMAGE}} )" >> $GITHUB_ENV
+          echo "NGINX_IMAGE=$(echo ${{env.NGINX_IMAGE}} )" >> $GITHUB_ENV
+
+      - name: Log in to GitHub Packages
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+
+      - name: Pull images
+        run: |
+          docker pull ${{ env.WEBSITE_IMAGE }} || true
+          docker pull ${{ env.NGINX_IMAGE }} || true
+
+      - name: Build images
+        run: |
+          docker-compose -f Docker-compose.ci.yml build
+        env:
+          WEBSITE_IMAGE: ${{ env.WEBSITE_IMAGE }}
+          NGINX_IMAGE: ${{ env.NGINX_IMAGE }}
+
+      #- name: Tag the Docker image
+      #  run: |
+      #    docker tag my-app:latest ${{ env.WEBSITE_IMAGE }}:latest
+      #    docker tag nginx:latest ${{ env.NGINX_IMAGE }}:latest
+
+      - name: Push images
+        run: |
+          docker push ${{ env.WEBSITE_IMAGE }}
+          docker push ${{ env.NGINX_IMAGE }}
