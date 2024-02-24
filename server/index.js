@@ -18,7 +18,7 @@ const pool = mysql.createPool({
 
 // FOR DEVELOPMENT PURPOSES
 const IP_ADDRESS = "127.0.0.1";
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 const { body, validationResult } = require("express-validator");
