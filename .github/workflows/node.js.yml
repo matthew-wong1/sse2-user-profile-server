@@ -16,7 +16,7 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,6 +31,7 @@ jobs:
       - run: npm test
 
   build-docker-image:
+    needs: build-and-test
     name: Build the Docker Image
     runs-on: ubuntu-latest
 
