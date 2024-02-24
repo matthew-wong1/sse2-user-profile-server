@@ -1,28 +1,28 @@
-version: '3.2'
+version: "3.2"
 services:
   website:
     build:
-      context: ./website
+      context: ./server
       dockerfile: Dockerfile
     #cache_from:
     #    - '${website_IMAGE}'
-    image: '${WEBSITE_IMAGE}'           # '${website}'
+    image: "${WEBSITE_IMAGE}" # '${website}'
     ports:
       - "3000:3000"
     volumes:
-      - website:/usr/share/nginx/html/website/build  # build files will be added at this directory
+      - website:/usr/share/nginx/html/website/build # build files will be added at this directory
 
   nginx:
     build:
-     context: ./nginx
-     dockerfile: Dockerfile
+      context: ./nginx
+      dockerfile: Dockerfile
     #cache_from:
     #    - '${NGINX_IMAGE}'
-    image: '${NGINX_IMAGE}'  # '${nginx}'
+    image: "${NGINX_IMAGE}" # '${nginx}'
     ports:
       - "80:80"
     volumes:
       - website:/usr/share/nginx/html/website # Copy React App's build files to the Nginx directory
 
 volumes:
-   website:
+  website:
