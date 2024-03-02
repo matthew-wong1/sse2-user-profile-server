@@ -60,3 +60,7 @@ jobs:
       - name: Push container
         run: |
           docker push 992382773706.dkr.ecr.eu-west-2.amazonaws.com/connectu-user-profile-server:latest
+
+      - name: Update lambda function
+        run: |
+          aws lambda update-function-code --function-name connectu-signin-signup --image-uri 992382773706.dkr.ecr.eu-west-2.amazonaws.com/connectu-user-profile-server:latest

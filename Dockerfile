@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # Command to run the server
-CMD ["node", "server/index.js"]
+CMD ["node", "app.js"]
