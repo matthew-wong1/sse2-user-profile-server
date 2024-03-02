@@ -42,20 +42,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR Public
-        run: aws ecr-public get-login-password --region eu-west-2 | docker login --username AWS --password-stdin public.ecr.aws/j1z8j5v0
+      - name: Login to Amazon ECR
+        aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin 992382773706.dkr.ecr.eu-west-2.amazonaws.com
 
       - name: Build images
         run: |
-          docker build -t sse2-user-profile-server ./
+          docker build -t connectu-user-profile-server . ./
 
       - name: List Docker images (for debugging)
         run: docker images
 
       - name: Tag images
         run: |
-          docker tag sse2-user-profile-server:latest public.ecr.aws/j1z8j5v0/sse2-user-profile-server:latest
+          docker tag connectu-user-profile-server:latest 992382773706.dkr.ecr.eu-west-2.amazonaws.com/connectu-user-profile-server:latest
 
       - name: Push container
         run: |
-          docker push public.ecr.aws/j1z8j5v0/sse2-user-profile-server:latest
+          docker push 992382773706.dkr.ecr.eu-west-2.amazonaws.com/connectu-user-profile-server:latest
