@@ -48,10 +48,7 @@ jobs:
 
       - name: Build images
         run: |
-          docker-compose -f Docker-compose.ci.yml build
-        env:
-          WEBSITE_IMAGE: ${{ env.WEBSITE_IMAGE }}
-          NGINX_IMAGE: ${{ env.NGINX_IMAGE }}
+          docker build -t sse2-user-profile-server ./
 
       - name: List Docker images (for debugging)
         run: docker images
