@@ -48,7 +48,7 @@ jobs:
 
       - name: Build images
         run: |
-          docker build -t connectu-user-profile-server . ./
+          docker build -t connectu-user-profile-server ./
 
       - name: List Docker images (for debugging)
         run: docker images
