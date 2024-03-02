@@ -56,3 +56,7 @@ jobs:
       - name: Tag images
         run: |
           docker tag sse2-user-profile-server:latest public.ecr.aws/j1z8j5v0/sse2-user-profile-server:latest
+
+      - name: Push container
+        run: |
+          docker push public.ecr.aws/j1z8j5v0/sse2-user-profile-server:latest
