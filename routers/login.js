@@ -44,7 +44,7 @@ Router.post("/", async (request, response, next) => {
           { username: username, uni: uni },
           process.env.SECRET
         );
-        return response.status(200).send(token);
+        return response.status(200).send({token, uni});
       }
     });
   } catch (error) {
