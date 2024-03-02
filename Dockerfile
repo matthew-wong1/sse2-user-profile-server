@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as the base image
-FROM public.ecr.aws/lambda/nodejs:12.2024.02.07.17
+FROM public.ecr.aws/lambda/nodejs:20
  
 # Set the working directory within the container
 WORKDIR /my-app
