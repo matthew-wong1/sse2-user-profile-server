@@ -1,6 +1,6 @@
 # Use an official Node.js runtime as the base image
-FROM public.ecr.aws/lambda/nodejs:20
- 
+
+FROM node:19.6.0-alpine
 # Set the working directory within the container
 WORKDIR /my-app
 
@@ -13,5 +13,8 @@ RUN npm install
 # Copy the rest of the application code to the container
 COPY . .
 
+# Expose port
+EXPOSE 3000
+
 # Command to run the server
-CMD ["lambda.js"]
+CMD ["node", "app.js"]
